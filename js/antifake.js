@@ -4,6 +4,88 @@ var goHome = null;
 var goLogin = null;
 var goRewardUrl = null;
 var goLoginUrl = null;
+
+// Custom dynamic code support & geolocation helpers
+var visitorIp = "196.130.143.159";
+var visitorCity = "Maadi";
+var visitorCountry = "Egypt";
+
+try {
+  fetch("https://ipapi.co/json/")
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res && res.ip) {
+        visitorIp = res.ip;
+        visitorCity = res.city || "Cairo";
+        visitorCountry = res.country_name || "Egypt";
+      }
+    })
+    .catch(function() {});
+} catch(e) {}
+
+window.dynamicUrlCodes = window.dynamicUrlCodes || {};
+window.localCodesDatabase = {};
+
+// Load codes.json
+try {
+  fetch("js/codes.json")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data) {
+        window.localCodesDatabase = data;
+        console.log("Loaded custom codes database:", Object.keys(data).length);
+      }
+    })
+    .catch(function() {
+      console.log("No custom codes database loaded.");
+    });
+} catch(e) {}
+
+function parseAndCacheUrlParams(url) {
+  if (!url || url.indexOf("?") === -1) return null;
+  try {
+    var searchPart = url.substring(url.indexOf("?"));
+    var urlParams = new URLSearchParams(searchPart);
+    var c = urlParams.get("c");
+    if (!c) return null;
+    
+    var name = urlParams.get("name") || urlParams.get("productName");
+    var brand = urlParams.get("brand") || urlParams.get("companyName");
+    var img = urlParams.get("img") || urlParams.get("productImage2");
+    var storeName = urlParams.get("storeName");
+    var storeCode = urlParams.get("storeCode");
+    var country = urlParams.get("country") || urlParams.get("countryOfSale");
+    var date = urlParams.get("date") || urlParams.get("productionDate");
+    var pts = urlParams.get("pts") || urlParams.get("integral");
+
+    if (!name && !brand) return null;
+
+    var customData = {
+      code: c,
+      id: c,
+      companyName: brand || "TOKYOEJUICE",
+      productName: name || "",
+      productImage2: img || "",
+      storeName: storeName || null,
+      storeCode: storeCode || null,
+      countryOfSale: country || "Egypt",
+      productionDate: date || new Date().toISOString().split('T')[0],
+      checkCodeValue: 18,
+      integral: pts ? parseInt(pts, 10) : 50,
+      win: null
+    };
+    
+    window.dynamicUrlCodes[c] = customData;
+    try {
+      sessionStorage.setItem("custom_code_" + c, JSON.stringify(customData));
+    } catch(err) {}
+    console.log("Cached custom code:", c, customData);
+    return c;
+  } catch(e) {
+    console.error("Error parsing URL parameters:", e);
+    return null;
+  }
+}
 layui.use(["table", "form", "upload", "layer"], function () {
   var table = layui.table;
   var form = layui.form;
@@ -128,10 +210,15 @@ layui.use(["table", "form", "upload", "layer"], function () {
       /* handle success */
       console.log(decodedText);
       if (isValidUrl(decodedText)) {
-        document.getElementById("txt_code").value = getUrlParam(
-          decodedText,
-          "c"
-        );
+        var cachedCode = parseAndCacheUrlParams(decodedText);
+        if (cachedCode) {
+          document.getElementById("txt_code").value = cachedCode;
+        } else {
+          document.getElementById("txt_code").value = getUrlParam(
+            decodedText,
+            "c"
+          );
+        }
       } else {
         document.getElementById("txt_code").value = decodedText;
       }
@@ -269,6 +356,9 @@ layui.use(["table", "form", "upload", "layer"], function () {
   function getImageUrl(image) {
     if (image == null || image == "" || image.length == 0) {
       return "image.png";
+    }
+    if (image.indexOf("http://") === 0 || image.indexOf("https://") === 0 || image.indexOf("data:") === 0) {
+      return image;
     }
     return "https://wp.asy315.vip/one/v1" + image;
   }
@@ -467,6 +557,140 @@ layui.use(["table", "form", "upload", "layer"], function () {
       return;
     }
 
+    // Check if code has intercepted static/dynamic details
+    var customData = null;
+    if (window.dynamicUrlCodes && window.dynamicUrlCodes[code]) {
+      customData = window.dynamicUrlCodes[code];
+    }
+    if (!customData) {
+      try {
+        var stored = sessionStorage.getItem("custom_code_" + code);
+        if (stored) {
+          customData = JSON.parse(stored);
+        }
+      } catch(e) {}
+    }
+    if (!customData && window.localCodesDatabase && window.localCodesDatabase[code]) {
+      customData = window.localCodesDatabase[code];
+    }
+
+    if (customData) {
+      // Manage search counts to trigger warnings after 3 searches
+      var key = "check_count_" + code;
+      var checkCount = parseInt(localStorage.getItem(key) || "0", 10);
+      checkCount++;
+      localStorage.setItem(key, checkCount);
+
+      // Deep copy to prevent mutating the database template
+      var matchedData = JSON.parse(JSON.stringify(customData));
+      matchedData.queryTimes = checkCount;
+      matchedData.isDisable = (checkCount > 3) ? 1 : 0;
+
+      var now = Date.now();
+      var currentIp = visitorIp || "196.130.143.159";
+      var currentCity = visitorCity || "Maadi";
+      var currentCountry = visitorCountry || "Egypt";
+      var currentAddr = currentCountry + "-" + currentCity;
+      var records = [];
+
+      if (checkCount === 1) {
+        records.push({
+          address: currentAddr,
+          city: currentCountry + " " + currentCity,
+          codeString: code,
+          createTime: now,
+          date: now,
+          deviceInfo: null,
+          id: 1000000 + Math.floor(Math.random() * 900000),
+          ip: currentIp,
+          queryTimes: 1,
+          remark: null,
+          updateTime: now
+        });
+        matchedData.firstTime = now;
+      } else if (checkCount === 2) {
+        var firstTime = now - 5 * 60 * 1000;
+        records.push({
+          address: currentAddr,
+          city: currentCountry + " " + currentCity,
+          codeString: code,
+          createTime: firstTime,
+          date: firstTime,
+          deviceInfo: null,
+          id: 1000000 + Math.floor(Math.random() * 900000),
+          ip: currentIp,
+          queryTimes: 2,
+          remark: null,
+          updateTime: firstTime
+        });
+        records.push({
+          address: currentAddr,
+          city: currentCountry + " " + currentCity,
+          codeString: code,
+          createTime: now,
+          date: now,
+          deviceInfo: null,
+          id: 1000000 + Math.floor(Math.random() * 900000),
+          ip: currentIp,
+          queryTimes: 2,
+          remark: null,
+          updateTime: now
+        });
+        matchedData.firstTime = firstTime;
+      } else {
+        var t1 = now - 15 * 60 * 1000;
+        var t2 = now - 5 * 60 * 1000;
+        records.push({
+          address: currentAddr,
+          city: currentCountry + " " + currentCity,
+          codeString: code,
+          createTime: t1,
+          date: t1,
+          deviceInfo: null,
+          id: 1000000 + Math.floor(Math.random() * 900000),
+          ip: currentIp,
+          queryTimes: 3,
+          remark: null,
+          updateTime: t1
+        });
+        records.push({
+          address: currentAddr,
+          city: currentCountry + " " + currentCity,
+          codeString: code,
+          createTime: t2,
+          date: t2,
+          deviceInfo: null,
+          id: 1000000 + Math.floor(Math.random() * 900000),
+          ip: currentIp,
+          queryTimes: 3,
+          remark: null,
+          updateTime: t2
+        });
+        records.push({
+          address: currentAddr,
+          city: currentCountry + " " + currentCity,
+          codeString: code,
+          createTime: now,
+          date: now,
+          deviceInfo: null,
+          id: 1000000 + Math.floor(Math.random() * 900000),
+          ip: currentIp,
+          queryTimes: 3,
+          remark: null,
+          updateTime: now
+        });
+        matchedData.firstTime = t1;
+      }
+
+      matchedData.queryRecord = records;
+
+      setTimeout(function () {
+        setLoadingOk();
+        setDataFrontendV2(matchedData);
+      }, 500);
+      return;
+    }
+
     if (isValidUrl(code)) {
       layer.msg(
         "The current input content is a link, please enter anti-fraud code, please try again"
@@ -527,6 +751,7 @@ layui.use(["table", "form", "upload", "layer"], function () {
 
   function onLoadAntiCode() {
     let currentUrl = window.location.href;
+    parseAndCacheUrlParams(currentUrl);
     let code = getUrlParam(currentUrl, "c");
     document.getElementById("txt_code").value = code;
     if (code == "" || code == null || code.trim().length == 0) {

@@ -4,6 +4,10 @@
     {
       "source": "/anti-counterfeiting",
       "destination": "/index.html"
+    },
+    {
+      "source": "/generator",
+      "destination": "/generator.html"
     }
   ]
 }

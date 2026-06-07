@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anti-Counterfeiting | QR Code Admin Portal</title>
+  <!-- Google Fonts Poppins -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Layui CSS (Matches site design utilities) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.8.17/css/layui.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #0B0F19;
+      --card-bg: #131A26;
+      --accent-red: #CC1939;
+      --accent-red-hover: #E52E4F;
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --border-color: #242F41;
+      --input-bg: #1C2433;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header styling */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #FFF;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    header h1 span.brand {
+      color: var(--accent-red);
+    }
+
+    header p {
+      color: var(--text-muted);
+      margin-top: 5px;
+      font-size: 1rem;
+    }
+
+    /* Main Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 30px;
+      margin-bottom: 45px;
+    }
+
+    @media (max-width: 992px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Card glow accents */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background-color: var(--accent-red);
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 25px;
+      color: #FFF;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    @media (max-width: 576px) {
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    input, select {
+      width: 100%;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-main);
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      transition: all 0.25s ease;
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-red);
+      box-shadow: 0 0 0 3px rgba(204, 25, 57, 0.15);
+    }
+
+    .input-with-btn {
+      display: flex;
+      gap: 10px;
+    }
+
+    .input-with-btn input {
+      flex: 1;
+    }
+
+    /* Button System */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--accent-red);
+      color: #FFF;
+      font-weight: 500;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover {
+      background-color: var(--accent-red-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(204, 25, 57, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #1F293D;
+      border-color: var(--text-muted);
+      box-shadow: none;
+    }
+
+    .btn-small {
+      padding: 8px 14px;
+      font-size: 0.8rem;
+    }
+
+    /* Presets dropdown styling */
+    .preset-selector {
+      background-color: var(--input-bg);
+      color: var(--text-main);
+      margin-top: 8px;
+    }
+
+    /* Live Preview Column */
+    .preview-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 350px;
+    }
+
+    .qr-container {
+      background-color: #FFF;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 240px;
+      height: 240px;
+    }
+
+    .qr-placeholder {
+      color: #333;
+      text-align: center;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .links-output {
+      width: 100%;
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+    }
+
+    .links-output h4 {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .links-output textarea {
+      width: 100%;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      border-radius: 4px;
+      padding: 8px;
+      font-size: 0.8rem;
+      resize: none;
+      height: 60px;
+      margin-bottom: 10px;
+      outline: none;
+    }
+
+    /* Data Table registry styling */
+    .registry-section {
+      margin-top: 20px;
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 15px;
+    }
+
+    .layui-table {
+      background-color: var(--card-bg) !important;
+      color: var(--text-main) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .layui-table th {
+      background-color: #1A2232 !important;
+      color: #FFF !important;
+      font-weight: 600 !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .layui-table td {
+      border-color: var(--border-color) !important;
+      background-color: var(--card-bg) !important;
+      color: var(--text-main) !important;
+    }
+
+    .layui-table tr:hover {
+      background-color: #182130 !important;
+    }
+
+    .action-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background-color: rgba(204, 25, 57, 0.15);
+      color: var(--accent-red);
+      cursor: pointer;
+    }
+
+    /* Database File Operations styling */
+    .db-ops {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .db-ops input[type="file"] {
+      display: none;
+    }
+
+    /* Custom animations */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1><span class="brand">TOKYOEJUICE</span> Anti-Counterfeiting Portal</h1>
+    <p>Admin QR Code Generator & Local Verification Registry</p>
+  </header>
+
+  <div class="dashboard-grid">
+    <!-- Form Inputs Panel -->
+    <div class="card">
+      <div class="card-title">
+        <span>Product Configuration</span>
+        <button class="btn btn-secondary btn-small" onclick="autoFillMockData()">Load Mock Presets</button>
+      </div>
+      
+      <form id="qrForm" onsubmit="return false;">
+        <!-- Code field -->
+        <div class="form-group">
+          <label for="code">Anti-Counterfeiting Code (18 Digits)</label>
+          <div class="input-with-btn">
+            <input type="text" id="code" maxlength="18" placeholder="e.g., 554129247412432026" required>
+            <button class="btn" type="button" onclick="fillRandomCode()">Generate</button>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="brand">Brand / Company Name</label>
+            <input type="text" id="brand" value="TOKYOEJUICE" required>
+          </div>
+          <div class="form-group">
+            <label for="pts">Verification Reward Points</label>
+            <input type="number" id="pts" value="50" min="0" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="productName">Product Flavor / Name</label>
+          <input type="text" id="productName" placeholder="e.g., Supercool30ml-dragon fruit-box-NEW" required>
+          <select class="preset-selector" onchange="applyFlavorPreset(this.value)">
+            <option value="">-- Apply Flavor Presets --</option>
+            <option value="dragon">Supercool 30ml - Dragon Fruit (Preset)</option>
+            <option value="mango">Supercool 30ml - Sweet Mango (Preset)</option>
+            <option value="grape">Supercool 30ml - Iced Grape (Preset)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="image">Product Image URL</label>
+          <input type="text" id="image" placeholder="e.g., https://... or absolute local path" required>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="storeName">Store Name (Optional)</label>
+            <input type="text" id="storeName" placeholder="e.g., Tokyo Vape Cairo">
+          </div>
+          <div class="form-group">
+            <label for="storeCode">Store Code (Optional)</label>
+            <input type="text" id="storeCode" placeholder="e.g., T-CAI-01">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="country">Country of Sale</label>
+            <input type="text" id="country" value="Egypt" required>
+          </div>
+          <div class="form-group">
+            <label for="date">Production Date</label>
+            <input type="date" id="date" required>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 30px; display: flex; gap: 15px;">
+          <button class="btn" style="flex: 1;" onclick="generateQR()">Generate Instant QR</button>
+          <button class="btn btn-secondary" style="flex: 1;" onclick="registerCode()">Add to Database</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Live Preview Panel -->
+    <div class="card" style="display: flex; flex-direction: column;">
+      <div class="card-title">Live QR Preview</div>
+      
+      <div class="preview-section">
+        <div class="qr-container" id="qrcode">
+          <div class="qr-placeholder">Complete the configuration details to render QR code</div>
+        </div>
+        
+        <div id="action_buttons" style="display: none; margin-bottom: 20px;">
+          <button class="btn btn-small" onclick="downloadQRCode()">Download QR Image</button>
+        </div>
+
+        <div class="links-output">
+          <h4>Generated Anti-Counterfeiting URL:</h4>
+          <textarea id="outputUrl" readonly placeholder="Enter configuration details and click 'Generate Instant QR'"></textarea>
+          <button class="btn btn-secondary btn-small" style="width: 100%;" onclick="copyLink()">Copy URL</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registry Operations Card -->
+  <div class="card registry-section">
+    <div class="card-title">
+      <span>Local Codes Registry (JSON Database)</span>
+      <span style="font-size: 0.85rem; color: var(--text-muted);" id="dbCount">Total Configured: 0 codes</span>
+    </div>
+
+    <div class="db-ops">
+      <button class="btn btn-small btn-secondary" onclick="triggerImport()">Import Deployed codes.json</button>
+      <input type="file" id="importFile" accept=".json" onchange="importJSON(this)">
+      <button class="btn btn-small" onclick="exportJSON()">Download/Export codes.json</button>
+    </div>
+
+    <div class="table-responsive">
+      <table class="layui-table">
+        <thead>
+          <tr>
+            <th>18-Digit Code</th>
+            <th>Product Name</th>
+            <th>Brand</th>
+            <th>Country</th>
+            <th>Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="registryTable">
+          <tr>
+            <td colspan="6" style="text-align: center; color: var(--text-muted);">No custom codes currently added to registry. Add using form or import a codes.json file.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.8.17/layui.min.js"></script>
+<!-- QRCode.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+  var qrGenerator = null;
+  window.registryCodes = {};
+
+  // Default Preset Values
+  var presets = {
+    dragon: {
+      name: "Supercool30ml-dragon fruit-box-NEW",
+      img: "/files/images/products/20251023_1761204852817.jpg"
+    },
+    mango: {
+      name: "Supercool30ml-mango-box-NEW",
+      img: "/files/images/products/20251023_1761204839576.jpg"
+    },
+    grape: {
+      name: "Supercool30ml-grape-box-NEW",
+      img: "https://wp.asy315.vip/one/v1/files/images/products/20251023_1761204852817.jpg" // Absolute URL simulation
+    }
+  };
+
+  // Set default date
+  document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+  // Try to load any existing deployed codes.json from server on start
+  fetch('js/codes.json')
+    .then(res => res.json())
+    .then(data => {
+      if (data && typeof data === 'object') {
+        window.registryCodes = data;
+        updateRegistryTable();
+      }
+    })
+    .catch(err => {
+      console.log("No deployed codes.json found yet.");
+    });
+
+  // Helper: random code generator
+  function fillRandomCode() {
+    let code = "554129"; // Official starting digits of Tokyo Ejuice anti-counterfeit system
+    for (let i = 0; i < 12; i++) {
+      code += Math.floor(Math.random() * 10);
+    }
+    document.getElementById('code').value = code;
+  }
+
+  // Preset Applicator
+  function applyFlavorPreset(key) {
+    if (presets[key]) {
+      document.getElementById('productName').value = presets[key].name;
+      document.getElementById('image').value = presets[key].img;
+    }
+  }
+
+  // Load standard mockup values
+  function autoFillMockData() {
+    fillRandomCode();
+    document.getElementById('brand').value = "TOKYOEJUICE";
+    document.getElementById('productName').value = presets.dragon.name;
+    document.getElementById('image').value = presets.dragon.img;
+    document.getElementById('storeName').value = "Maadi Vape Hub";
+    document.getElementById('storeCode').value = "TK-MAA-24";
+    document.getElementById('country').value = "Egypt";
+    document.getElementById('date').value = "2025-10-23";
+    document.getElementById('pts').value = "50";
+  }
+
+  // Form Reader Helper
+  function getFormData() {
+    let code = document.getElementById('code').value.trim();
+    let brand = document.getElementById('brand').value.trim();
+    let productName = document.getElementById('productName').value.trim();
+    let image = document.getElementById('image').value.trim();
+    let storeName = document.getElementById('storeName').value.trim();
+    let storeCode = document.getElementById('storeCode').value.trim();
+    let country = document.getElementById('country').value.trim();
+    let date = document.getElementById('date').value.trim();
+    let pts = document.getElementById('pts').value.trim();
+
+    if (!code || !productName || !image) {
+      layui.layer.msg("Anti-fraud code, Flavor Name, and Image URL are required!", { icon: 2 });
+      return null;
+    }
+
+    if (code.length < 10) {
+      layui.layer.msg("Code must be at least 10 digits!", { icon: 2 });
+      return null;
+    }
+
+    return {
+      code: code,
+      companyName: brand,
+      productName: productName,
+      productImage2: image,
+      storeName: storeName || null,
+      storeCode: storeCode || null,
+      countryOfSale: country,
+      productionDate: date,
+      checkCodeValue: 18,
+      integral: parseInt(pts) || 50,
+      win: null
+    };
+  }
+
+  // Build target query link for static system
+  function buildUrl(data) {
+    let basePath = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '/index.html' : '/anti-counterfeiting';
+    let target = window.location.origin + basePath + "?c=" + data.code;
+    
+    target += "&name=" + encodeURIComponent(data.productName);
+    target += "&brand=" + encodeURIComponent(data.companyName);
+    target += "&img=" + encodeURIComponent(data.productImage2);
+    if (data.storeName) target += "&storeName=" + encodeURIComponent(data.storeName);
+    if (data.storeCode) target += "&storeCode=" + encodeURIComponent(data.storeCode);
+    target += "&country=" + encodeURIComponent(data.countryOfSale);
+    target += "&date=" + encodeURIComponent(data.productionDate);
+    target += "&pts=" + data.integral;
+
+    return target;
+  }
+
+  // Generate QR & URL
+  function generateQR() {
+    let data = getFormData();
+    if (!data) return;
+
+    let targetUrl = buildUrl(data);
+    document.getElementById('outputUrl').value = targetUrl;
+
+    // Reset container and generate QR
+    let container = document.getElementById('qrcode');
+    container.innerHTML = "";
+    
+    qrGenerator = new QRCode(container, {
+      text: targetUrl,
+      width: 200,
+      height: 200,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    document.getElementById('action_buttons').style.display = "block";
+    layui.layer.msg("QR Code Generated successfully!", { icon: 1 });
+  }
+
+  // Copy URL to clipboard
+  function copyLink() {
+    let urlField = document.getElementById('outputUrl');
+    if (!urlField.value) {
+      layui.layer.msg("No URL to copy yet!", { icon: 2 });
+      return;
+    }
+    urlField.select();
+    urlField.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(urlField.value);
+    layui.layer.msg("Link copied to clipboard!", { icon: 1 });
+  }
+
+  // Download QR Code Image
+  function downloadQRCode() {
+    let imgElement = document.querySelector('#qrcode img');
+    if (!imgElement) {
+      layui.layer.msg("Please generate a QR code first!", { icon: 2 });
+      return;
+    }
+    
+    let link = document.createElement('a');
+    link.download = 'qrcode_' + document.getElementById('code').value + '.png';
+    link.href = imgElement.src;
+    link.click();
+  }
+
+  // Register code to Local Registry
+  function registerCode() {
+    let data = getFormData();
+    if (!data) return;
+
+    window.registryCodes[data.code] = data;
+    
+    updateRegistryTable();
+    layui.layer.msg("Code " + data.code + " registered to JSON database!", { icon: 1 });
+  }
+
+  // Update Database Table Render
+  function updateRegistryTable() {
+    let tbody = document.getElementById('registryTable');
+    let keys = Object.keys(window.registryCodes);
+    
+    document.getElementById('dbCount').innerText = "Total Configured: " + keys.length + " codes";
+
+    if (keys.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No custom codes currently added to registry. Add using form or import a codes.json file.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = "";
+    keys.forEach(key => {
+      let codeObj = window.registryCodes[key];
+      let row = document.createElement('tr');
+      row.innerHTML = `
+        <td><strong>${codeObj.code}</strong></td>
+        <td>${codeObj.productName}</td>
+        <td>${codeObj.companyName}</td>
+        <td>${codeObj.countryOfSale}</td>
+        <td>${codeObj.productionDate}</td>
+        <td>
+          <span class="action-badge" onclick="deleteCode('${codeObj.code}')">Delete</span>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Delete Code from local registry
+  function deleteCode(code) {
+    layui.layer.confirm("Are you sure you want to delete code " + code + "?", {
+      skin: 'layui-layer-admin',
+      title: 'Confirm Delete'
+    }, function(index) {
+      delete window.registryCodes[code];
+      updateRegistryTable();
+      layui.layer.close(index);
+      layui.layer.msg("Code removed from registry.");
+    });
+  }
+
+  // Trigger file selection for Import
+  function triggerImport() {
+    document.getElementById('importFile').click();
+  }
+
+  // Import JSON File
+  function importJSON(input) {
+    let file = input.files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        let imported = JSON.parse(e.target.result);
+        if (imported && typeof imported === 'object') {
+          window.registryCodes = Object.assign({}, window.registryCodes, imported);
+          updateRegistryTable();
+          layui.layer.msg("Database imported successfully!", { icon: 1 });
+        } else {
+          layui.layer.msg("Invalid file structure. Must be a JSON object mapping codes to product details.", { icon: 2 });
+        }
+      } catch(err) {
+        layui.layer.msg("Error parsing JSON file: " + err.message, { icon: 2 });
+      }
+    };
+    reader.readAsText(file);
+    // Reset file input value
+    input.value = "";
+  }
+
+  // Export Local registry database as codes.json file
+  function exportJSON() {
+    let keys = Object.keys(window.registryCodes);
+    if (keys.length === 0) {
+      layui.layer.msg("No codes in registry to export!", { icon: 2 });
+      return;
+    }
+
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.registryCodes, null, 2));
+    let downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "codes.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    layui.layer.msg("codes.json exported successfully!", { icon: 1 });
+  }
+</script>
+
+</body>
+</html>
