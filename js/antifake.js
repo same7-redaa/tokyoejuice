@@ -549,39 +549,7 @@ layui.use(["table", "form", "upload", "layer"], function () {
     isLoading = false;
   }
 
-  function searchCode() {
-    $("#popContent").addClass("layui-hide");
-    $("#popContent_more").addClass("layui-hide");
-    $("#popContent_ok").addClass("layui-hide");
-    const openQueryConfig = getOpenQueryConfig();
-    const url = openQueryConfig.url;
-    if (isLoading) {
-      return;
-    }
-    setLoading();
-    let code = ($("#txt_code").val() || "").trim();
-    if (!hasGetLocation) {
-      getLocation();
-      setLoadingOk();
-      return;
-    }
 
-    // Check if code has intercepted static/dynamic details
-    var customData = null;
-    if (window.dynamicUrlCodes && window.dynamicUrlCodes[code]) {
-      customData = window.dynamicUrlCodes[code];
-    }
-    if (!customData) {
-      try {
-        var stored = sessionStorage.getItem("custom_code_" + code);
-        if (stored) {
-          customData = JSON.parse(stored);
-        }
-      } catch(e) {}
-    }
-    if (!customData && window.localCodesDatabase && window.localCodesDatabase[code]) {
-      customData = window.localCodesDatabase[code];
-    }
 
   function handleCodeInterception(code, customData) {
     // Manage search counts to trigger warnings after 3 searches
@@ -795,28 +763,6 @@ layui.use(["table", "form", "upload", "layer"], function () {
 
     const openQueryConfig = getOpenQueryConfig();
     const url = openQueryConfig.url;
-    const noncestr = randomString(8);
-    const index = openQueryConfig.index;
-    const timestamp = new Date().getTime();
-    const sign = createOpenQuerySign(code, noncestr, index, timestamp);
-    if (!sign) {
-      layer.msg("MD5 library failed to load, please try again later.");
-      setLoadingOk();
-      return;
-    }
-
-    if (isValidUrl(code)) {
-      layer.msg(
-        "The current input content is a link, please enter anti-fraud code, please try again"
-      );
-      setLoadingOk();
-      return;
-    }
-    if (code.length < 10) {
-      layer.msg("invalid anti-fraud code, please try again");
-      setLoadingOk();
-      return;
-    }
     const noncestr = randomString(8);
     const index = openQueryConfig.index;
     const timestamp = new Date().getTime();
