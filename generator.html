@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anti-Counterfeiting | QR Code Admin Portal</title>
-  <!-- Google Fonts Poppins -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Layui CSS (Matches site design utilities) -->
+  <title>لوحة التحكم | توليد رموز التحقق QR</title>
+  <!-- خط Google Fonts: Poppins و Tajawal للمظهر العربي المميز -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- Layui CSS (مكتبة الواجهات) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.8.17/css/layui.min.css">
   
   <style>
@@ -28,11 +28,12 @@
     }
 
     body {
-      font-family: 'Poppins', sans-serif;
+      font-family: 'Tajawal', 'Poppins', sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-main);
       padding: 40px 20px;
       min-height: 100vh;
+      text-align: right;
     }
 
     .container {
@@ -40,7 +41,7 @@
       margin: 0 auto;
     }
 
-    /* Header styling */
+    /* العنوان الرئيسي */
     header {
       text-align: center;
       margin-bottom: 40px;
@@ -48,27 +49,28 @@
 
     header h1 {
       font-size: 2.2rem;
-      font-weight: 700;
+      font-weight: 800;
       color: #FFF;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
+      margin-bottom: 10px;
     }
 
     header h1 span.brand {
       color: var(--accent-red);
+      font-family: 'Poppins', sans-serif;
     }
 
     header p {
       color: var(--text-muted);
-      margin-top: 5px;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      font-weight: 500;
     }
 
-    /* Main Dashboard Grid */
+    /* لوحة التحكم الأساسية */
     .dashboard-grid {
       display: grid;
       grid-template-columns: 1.2fr 0.8fr;
@@ -92,28 +94,30 @@
       overflow: hidden;
     }
 
-    /* Card glow accents */
+    /* شريط الزينة الخمري الجانبي */
     .card::before {
       content: '';
       position: absolute;
       top: 0;
-      left: 0;
+      right: 0;
       width: 4px;
       height: 100%;
       background-color: var(--accent-red);
     }
 
     .card-title {
-      font-size: 1.3rem;
-      font-weight: 600;
+      font-size: 1.4rem;
+      font-weight: 700;
       margin-bottom: 25px;
       color: #FFF;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 15px;
     }
 
-    /* Form Controls */
+    /* الحقول والاستمارات */
     .form-group {
       margin-bottom: 20px;
     }
@@ -133,11 +137,10 @@
 
     label {
       display: block;
-      font-size: 0.85rem;
-      font-weight: 500;
+      font-size: 0.9rem;
+      font-weight: 600;
       color: var(--text-muted);
       margin-bottom: 8px;
-      text-transform: uppercase;
     }
 
     input, select {
@@ -150,6 +153,7 @@
       font-size: 0.95rem;
       transition: all 0.25s ease;
       outline: none;
+      font-family: 'Tajawal', sans-serif;
     }
 
     input:focus, select:focus {
@@ -166,22 +170,38 @@
       flex: 1;
     }
 
-    /* Button System */
+    /* التنبيهات التوضيحية */
+    .info-box {
+      background-color: rgba(204, 25, 57, 0.08);
+      border: 1px dashed rgba(204, 25, 57, 0.3);
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .info-box strong {
+      color: var(--text-main);
+    }
+
+    /* الأزرار */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       background-color: var(--accent-red);
       color: #FFF;
-      font-weight: 500;
+      font-weight: 700;
       border: none;
       border-radius: 6px;
       padding: 12px 20px;
       cursor: pointer;
       transition: all 0.25s ease;
-      font-size: 0.9rem;
-      text-transform: uppercase;
+      font-size: 0.95rem;
       letter-spacing: 0.5px;
+      gap: 8px;
     }
 
     .btn:hover {
@@ -208,17 +228,15 @@
 
     .btn-small {
       padding: 8px 14px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
     }
 
-    /* Presets dropdown styling */
     .preset-selector {
-      background-color: var(--input-bg);
-      color: var(--text-main);
       margin-top: 8px;
+      cursor: pointer;
     }
 
-    /* Live Preview Column */
+    /* معاينة الكود */
     .preview-section {
       display: flex;
       flex-direction: column;
@@ -243,8 +261,8 @@
     .qr-placeholder {
       color: #333;
       text-align: center;
-      font-size: 0.9rem;
-      font-weight: 500;
+      font-size: 0.95rem;
+      font-weight: 700;
     }
 
     .links-output {
@@ -257,10 +275,10 @@
     }
 
     .links-output h4 {
-      font-size: 0.85rem;
-      text-transform: uppercase;
+      font-size: 0.9rem;
       color: var(--text-muted);
       margin-bottom: 8px;
+      font-weight: 700;
     }
 
     .links-output textarea {
@@ -270,14 +288,16 @@
       color: var(--text-main);
       border-radius: 4px;
       padding: 8px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       resize: none;
-      height: 60px;
+      height: 70px;
       margin-bottom: 10px;
       outline: none;
+      text-align: left;
+      direction: ltr;
     }
 
-    /* Data Table registry styling */
+    /* جدول السجلات */
     .registry-section {
       margin-top: 20px;
     }
@@ -291,13 +311,15 @@
       background-color: var(--card-bg) !important;
       color: var(--text-main) !important;
       border-color: var(--border-color) !important;
+      text-align: right !important;
     }
 
     .layui-table th {
       background-color: #1A2232 !important;
       color: #FFF !important;
-      font-weight: 600 !important;
+      font-weight: 700 !important;
       border-color: var(--border-color) !important;
+      text-align: right !important;
     }
 
     .layui-table td {
@@ -312,16 +334,15 @@
 
     .action-badge {
       display: inline-block;
-      padding: 4px 8px;
+      padding: 4px 10px;
       border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 500;
+      font-size: 0.8rem;
+      font-weight: 700;
       background-color: rgba(204, 25, 57, 0.15);
       color: var(--accent-red);
       cursor: pointer;
     }
 
-    /* Database File Operations styling */
     .db-ops {
       display: flex;
       gap: 15px;
@@ -331,151 +352,162 @@
     .db-ops input[type="file"] {
       display: none;
     }
-
-    /* Custom animations */
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-
-    .pulse {
-      animation: pulse 2s infinite;
-    }
   </style>
 </head>
 <body>
 
 <div class="container">
   <header>
-    <h1><span class="brand">TOKYOEJUICE</span> Anti-Counterfeiting Portal</h1>
-    <p>Admin QR Code Generator & Local Verification Registry</p>
+    <h1>لوحة تحكم <span class="brand">TOKYOEJUICE</span> لمطابقة الفحص</h1>
+    <p>أداة توليد رموز QR الذكية والتحكم في تفاصيل المنتجات دون الحاجة لقواعد بيانات</p>
   </header>
 
   <div class="dashboard-grid">
-    <!-- Form Inputs Panel -->
+    <!-- إعدادات المنتج -->
     <div class="card">
       <div class="card-title">
-        <span>Product Configuration</span>
-        <button class="btn btn-secondary btn-small" onclick="autoFillMockData()">Load Mock Presets</button>
+        <span>إعدادات المنتج والباركود</span>
+        <button class="btn btn-secondary btn-small" onclick="autoFillMockData()">تحميل عينة نكهة جاهزة</button>
+      </div>
+
+      <div class="info-box">
+        💡 <strong>تنبيه للمطور:</strong> بما أن الاستضافة ثابتة (Static Vercel)، عند مسح الكود بالكاميرا، ستقوم الصفحة تلقائياً بالتعرف على نكهة المنتج والبيانات من خلال الرابط وعرضها. لا تتردد في استخدام ميزة <strong>توليد كود QR فوري</strong> لإنشاء الكود فوراً.
       </div>
       
       <form id="qrForm" onsubmit="return false;">
-        <!-- Code field -->
+        
+        <!-- إعداد النطاق / الدومين لحل مشكلة الفحص بالهاتف -->
         <div class="form-group">
-          <label for="code">Anti-Counterfeiting Code (18 Digits)</label>
+          <label for="domainSelect">نطاق الرابط (الدومين المستهدف)</label>
+          <select id="domainSelect" onchange="toggleCustomDomain(this.value)">
+            <option value="auto">تلقائي (حسب الرابط الحالي للجهاز)</option>
+            <option value="production">رابط Vercel الإنتاجي (https://same7-redaa-tokyoejuice.vercel.app)</option>
+            <option value="custom">رابط مخصص (Custom Domain)...</option>
+          </select>
+          <input type="text" id="customDomainInput" placeholder="أدخل رابط موقعك هنا (مثال: https://mywebsite.com)" style="display: none; margin-top: 10px; direction: ltr; text-align: left;">
+        </div>
+
+        <!-- الباركود -->
+        <div class="form-group">
+          <label for="code">رمز الفحص / الباركود (18 رقماً)</label>
           <div class="input-with-btn">
-            <input type="text" id="code" maxlength="18" placeholder="e.g., 554129247412432026" required>
-            <button class="btn" type="button" onclick="fillRandomCode()">Generate</button>
+            <input type="text" id="code" maxlength="18" placeholder="مثال: 554129247412432026" required style="direction: ltr; text-align: left;">
+            <button class="btn" type="button" onclick="fillRandomCode()">توليد عشوائي</button>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="brand">Brand / Company Name</label>
+            <label for="brand">اسم الشركة / العلامة التجارية</label>
             <input type="text" id="brand" value="TOKYOEJUICE" required>
           </div>
           <div class="form-group">
-            <label for="pts">Verification Reward Points</label>
+            <label for="pts">النقاط التي تظهر في التحقق (Pts)</label>
             <input type="number" id="pts" value="50" min="0" required>
           </div>
         </div>
 
+        <!-- اسم المنتج والنكهة -->
         <div class="form-group">
-          <label for="productName">Product Flavor / Name</label>
-          <input type="text" id="productName" placeholder="e.g., Supercool30ml-dragon fruit-box-NEW" required>
+          <label for="productName">اسم المنتج والنكهة (Product Flavor)</label>
+          <input type="text" id="productName" placeholder="مثال: Supercool30ml-dragon fruit-box-NEW" required>
           <select class="preset-selector" onchange="applyFlavorPreset(this.value)">
-            <option value="">-- Apply Flavor Presets --</option>
-            <option value="dragon">Supercool 30ml - Dragon Fruit (Preset)</option>
-            <option value="mango">Supercool 30ml - Sweet Mango (Preset)</option>
-            <option value="grape">Supercool 30ml - Iced Grape (Preset)</option>
+            <option value="">-- أو اختر من القوالب السريعة المتاحة --</option>
+            <option value="dragon">سوبر كول 30 مل - دراجون فروت (Dragon Fruit)</option>
+            <option value="mango">سوبر كول 30 مل - مانجو حلو (Sweet Mango)</option>
+            <option value="grape">سوبر كول 30 مل - عنب مثلج (Iced Grape)</option>
           </select>
         </div>
 
+        <!-- رابط الصورة -->
         <div class="form-group">
-          <label for="image">Product Image URL</label>
-          <input type="text" id="image" placeholder="e.g., https://... or absolute local path" required>
+          <label for="image">رابط صورة المنتج (المسار الكامل أو النسبي)</label>
+          <input type="text" id="image" placeholder="مثال: /files/images/products/... أو رابط إنترنت كامل لرفع الصورة" required style="direction: ltr; text-align: left;">
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="storeName">Store Name (Optional)</label>
-            <input type="text" id="storeName" placeholder="e.g., Tokyo Vape Cairo">
+            <label for="storeName">اسم المتجر الذي يظهر في الفحص (اختياري)</label>
+            <input type="text" id="storeName" placeholder="مثال: متجر فيب المعادي">
           </div>
           <div class="form-group">
-            <label for="storeCode">Store Code (Optional)</label>
-            <input type="text" id="storeCode" placeholder="e.g., T-CAI-01">
+            <label for="storeCode">كود المتجر (اختياري)</label>
+            <input type="text" id="storeCode" placeholder="مثال: MVS-09" style="direction: ltr; text-align: left;">
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="country">Country of Sale</label>
+            <label for="country">بلد البيع الموجه له</label>
             <input type="text" id="country" value="Egypt" required>
           </div>
           <div class="form-group">
-            <label for="date">Production Date</label>
+            <label for="date">تاريخ الإنتاج</label>
             <input type="date" id="date" required>
           </div>
         </div>
 
         <div class="form-group" style="margin-top: 30px; display: flex; gap: 15px;">
-          <button class="btn" style="flex: 1;" onclick="generateQR()">Generate Instant QR</button>
-          <button class="btn btn-secondary" style="flex: 1;" onclick="registerCode()">Add to Database</button>
+          <button class="btn" style="flex: 1;" onclick="generateQR()">توليد كود QR فوري</button>
+          <button class="btn btn-secondary" style="flex: 1;" onclick="registerCode()">إضافة لملف codes.json</button>
         </div>
       </form>
     </div>
 
-    <!-- Live Preview Panel -->
+    <!-- المعاينة المباشرة للكيو ار -->
     <div class="card" style="display: flex; flex-direction: column;">
-      <div class="card-title">Live QR Preview</div>
+      <div class="card-title">معاينة رمز الـ QR المولد</div>
       
       <div class="preview-section">
         <div class="qr-container" id="qrcode">
-          <div class="qr-placeholder">Complete the configuration details to render QR code</div>
+          <div class="qr-placeholder">قم بتعبئة حقول البيانات ثم اضغط على زر "توليد كود QR فوري" لعرض الباركود هنا</div>
         </div>
         
         <div id="action_buttons" style="display: none; margin-bottom: 20px;">
-          <button class="btn btn-small" onclick="downloadQRCode()">Download QR Image</button>
+          <button class="btn btn-small" onclick="downloadQRCode()">تحميل صورة الـ QR للطباعة</button>
         </div>
 
         <div class="links-output">
-          <h4>Generated Anti-Counterfeiting URL:</h4>
-          <textarea id="outputUrl" readonly placeholder="Enter configuration details and click 'Generate Instant QR'"></textarea>
-          <button class="btn btn-secondary btn-small" style="width: 100%;" onclick="copyLink()">Copy URL</button>
+          <h4>رابط التحقق الخاص بهذا الكود:</h4>
+          <textarea id="outputUrl" readonly placeholder="اضغط على زر توليد كود QR لعرض رابط الفحص هنا..."></textarea>
+          <button class="btn btn-secondary btn-small" style="width: 100%;" onclick="copyLink()">نسخ الرابط</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Registry Operations Card -->
+  <!-- سجل الأكواد -->
   <div class="card registry-section">
     <div class="card-title">
-      <span>Local Codes Registry (JSON Database)</span>
-      <span style="font-size: 0.85rem; color: var(--text-muted);" id="dbCount">Total Configured: 0 codes</span>
+      <span>سجل الأكواد الخاصة بك (ملف قاعدة البيانات codes.json)</span>
+      <span style="font-size: 0.9rem; color: var(--text-muted);" id="dbCount">إجمالي الأكواد: 0</span>
+    </div>
+
+    <div class="info-box" style="background-color: rgba(255,255,255,0.03); border-color: var(--border-color);">
+      للسماح للمستخدمين بكتابة الرموز يدوياً بدلاً من مسح الكيو ار، اضغط على <strong>تحميل وتصدير codes.json</strong> بعد الانتهاء، وانسخ الملف وضعه في مجلد <code>js/codes.json</code> بموقعك، ثم ارفع التحديث إلى GitHub.
     </div>
 
     <div class="db-ops">
-      <button class="btn btn-small btn-secondary" onclick="triggerImport()">Import Deployed codes.json</button>
+      <button class="btn btn-small btn-secondary" onclick="triggerImport()">استيراد ملف codes.json الحالي</button>
       <input type="file" id="importFile" accept=".json" onchange="importJSON(this)">
-      <button class="btn btn-small" onclick="exportJSON()">Download/Export codes.json</button>
+      <button class="btn btn-small" onclick="exportJSON()">تحميل وتصدير codes.json</button>
     </div>
 
     <div class="table-responsive">
       <table class="layui-table">
         <thead>
           <tr>
-            <th>18-Digit Code</th>
-            <th>Product Name</th>
-            <th>Brand</th>
-            <th>Country</th>
-            <th>Date</th>
-            <th>Action</th>
+            <th>الرمز (18 رقماً)</th>
+            <th>اسم المنتج</th>
+            <th>الشركة</th>
+            <th>البلد</th>
+            <th>تاريخ الإنتاج</th>
+            <th>التحكم</th>
           </tr>
         </thead>
         <tbody id="registryTable">
           <tr>
-            <td colspan="6" style="text-align: center; color: var(--text-muted);">No custom codes currently added to registry. Add using form or import a codes.json file.</td>
+            <td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد أكواد حالية في السجل. أضف أكواداً جديدة أو قم باستيراد ملف JSON.</td>
           </tr>
         </tbody>
       </table>
@@ -483,16 +515,15 @@
   </div>
 </div>
 
-<!-- Scripts -->
+<!-- مكتبات الواجهة والكيو ار -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/layui/2.8.17/layui.min.js"></script>
-<!-- QRCode.js library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
   var qrGenerator = null;
   window.registryCodes = {};
 
-  // Default Preset Values
+  // بيانات افتراضية مسبقة
   var presets = {
     dragon: {
       name: "Supercool30ml-dragon fruit-box-NEW",
@@ -504,14 +535,14 @@
     },
     grape: {
       name: "Supercool30ml-grape-box-NEW",
-      img: "https://wp.asy315.vip/one/v1/files/images/products/20251023_1761204852817.jpg" // Absolute URL simulation
+      img: "https://wp.asy315.vip/one/v1/files/images/products/20251023_1761204852817.jpg"
     }
   };
 
-  // Set default date
+  // تعيين تاريخ اليوم تلقائياً
   document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
-  // Try to load any existing deployed codes.json from server on start
+  // تحميل ملف codes.json الحالي من السيرفر تلقائياً إن وجد
   fetch('js/codes.json')
     .then(res => res.json())
     .then(data => {
@@ -524,16 +555,16 @@
       console.log("No deployed codes.json found yet.");
     });
 
-  // Helper: random code generator
+  // توليد باركود عشوائي للشركة
   function fillRandomCode() {
-    let code = "554129"; // Official starting digits of Tokyo Ejuice anti-counterfeit system
+    let code = "554129";
     for (let i = 0; i < 12; i++) {
       code += Math.floor(Math.random() * 10);
     }
     document.getElementById('code').value = code;
   }
 
-  // Preset Applicator
+  // تفعيل القوالب
   function applyFlavorPreset(key) {
     if (presets[key]) {
       document.getElementById('productName').value = presets[key].name;
@@ -541,20 +572,30 @@
     }
   }
 
-  // Load standard mockup values
+  // ملء الحقول تلقائياً للتجربة
   function autoFillMockData() {
     fillRandomCode();
     document.getElementById('brand').value = "TOKYOEJUICE";
     document.getElementById('productName').value = presets.dragon.name;
     document.getElementById('image').value = presets.dragon.img;
-    document.getElementById('storeName').value = "Maadi Vape Hub";
-    document.getElementById('storeCode').value = "TK-MAA-24";
+    document.getElementById('storeName').value = "Premium Vape Egypt";
+    document.getElementById('storeCode').value = "TK-EG-25";
     document.getElementById('country').value = "Egypt";
     document.getElementById('date').value = "2025-10-23";
     document.getElementById('pts').value = "50";
   }
 
-  // Form Reader Helper
+  // التحكم بإظهار خانة الرابط المخصص
+  function toggleCustomDomain(val) {
+    let input = document.getElementById('customDomainInput');
+    if (val === 'custom') {
+      input.style.display = 'block';
+    } else {
+      input.style.display = 'none';
+    }
+  }
+
+  // جلب البيانات من الاستمارة
   function getFormData() {
     let code = document.getElementById('code').value.trim();
     let brand = document.getElementById('brand').value.trim();
@@ -567,12 +608,12 @@
     let pts = document.getElementById('pts').value.trim();
 
     if (!code || !productName || !image) {
-      layui.layer.msg("Anti-fraud code, Flavor Name, and Image URL are required!", { icon: 2 });
+      layui.layer.msg("الرجاء ملء الرمز، اسم المنتج، ورابط الصورة أولاً!", { icon: 2 });
       return null;
     }
 
     if (code.length < 10) {
-      layui.layer.msg("Code must be at least 10 digits!", { icon: 2 });
+      layui.layer.msg("الرمز يجب ألا يقل عن 10 أرقام!", { icon: 2 });
       return null;
     }
 
@@ -591,10 +632,24 @@
     };
   }
 
-  // Build target query link for static system
+  // بناء رابط الفحص بناءً على إعداد الدومين
   function buildUrl(data) {
-    let basePath = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? '/index.html' : '/anti-counterfeiting';
-    let target = window.location.origin + basePath + "?c=" + data.code;
+    let domainSelect = document.getElementById('domainSelect').value;
+    let origin = window.location.origin;
+
+    if (domainSelect === 'production') {
+      origin = "https://same7-redaa-tokyoejuice.vercel.app";
+    } else if (domainSelect === 'custom') {
+      let customVal = document.getElementById('customDomainInput').value.trim();
+      if (customVal) {
+        origin = customVal.replace(/\/$/, ""); // إزالة الشرطة المائلة الأخيرة
+      }
+    }
+
+    let isProduction = origin.indexOf("vercel.app") !== -1 || origin.indexOf("tokyoejuice.com") !== -1;
+    let basePath = isProduction ? '/anti-counterfeiting' : '/index.html';
+    
+    let target = origin + basePath + "?c=" + data.code;
     
     target += "&name=" + encodeURIComponent(data.productName);
     target += "&brand=" + encodeURIComponent(data.companyName);
@@ -608,7 +663,7 @@
     return target;
   }
 
-  // Generate QR & URL
+  // توليد الكيو ار
   function generateQR() {
     let data = getFormData();
     if (!data) return;
@@ -616,7 +671,7 @@
     let targetUrl = buildUrl(data);
     document.getElementById('outputUrl').value = targetUrl;
 
-    // Reset container and generate QR
+    // مسح الحاوية وإنشاء الكيو ار
     let container = document.getElementById('qrcode');
     container.innerHTML = "";
     
@@ -630,27 +685,27 @@
     });
 
     document.getElementById('action_buttons').style.display = "block";
-    layui.layer.msg("QR Code Generated successfully!", { icon: 1 });
+    layui.layer.msg("تم توليد الكيو ار الفوري بنجاح!", { icon: 1 });
   }
 
-  // Copy URL to clipboard
+  // نسخ الرابط
   function copyLink() {
     let urlField = document.getElementById('outputUrl');
     if (!urlField.value) {
-      layui.layer.msg("No URL to copy yet!", { icon: 2 });
+      layui.layer.msg("لا يوجد رابط للنسخ بعد!", { icon: 2 });
       return;
     }
     urlField.select();
     urlField.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(urlField.value);
-    layui.layer.msg("Link copied to clipboard!", { icon: 1 });
+    layui.layer.msg("تم نسخ الرابط الحافظة!", { icon: 1 });
   }
 
-  // Download QR Code Image
+  // تحميل صورة الكيو ار
   function downloadQRCode() {
     let imgElement = document.querySelector('#qrcode img');
     if (!imgElement) {
-      layui.layer.msg("Please generate a QR code first!", { icon: 2 });
+      layui.layer.msg("الرجاء توليد الكود أولاً!", { icon: 2 });
       return;
     }
     
@@ -660,7 +715,7 @@
     link.click();
   }
 
-  // Register code to Local Registry
+  // إضافة الكود لقاعدة البيانات
   function registerCode() {
     let data = getFormData();
     if (!data) return;
@@ -668,18 +723,18 @@
     window.registryCodes[data.code] = data;
     
     updateRegistryTable();
-    layui.layer.msg("Code " + data.code + " registered to JSON database!", { icon: 1 });
+    layui.layer.msg("تمت إضافة الرمز " + data.code + " لقاعدة البيانات المؤقتة بنجاح!", { icon: 1 });
   }
 
-  // Update Database Table Render
+  // تحديث جدول السجلات
   function updateRegistryTable() {
     let tbody = document.getElementById('registryTable');
     let keys = Object.keys(window.registryCodes);
     
-    document.getElementById('dbCount').innerText = "Total Configured: " + keys.length + " codes";
+    document.getElementById('dbCount').innerText = "إجمالي الأكواد: " + keys.length;
 
     if (keys.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">No custom codes currently added to registry. Add using form or import a codes.json file.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد أكواد حالية في السجل. أضف أكواداً جديدة أو قم باستيراد ملف JSON.</td></tr>`;
       return;
     }
 
@@ -694,32 +749,32 @@
         <td>${codeObj.countryOfSale}</td>
         <td>${codeObj.productionDate}</td>
         <td>
-          <span class="action-badge" onclick="deleteCode('${codeObj.code}')">Delete</span>
+          <span class="action-badge" onclick="deleteCode('${codeObj.code}')">حذف</span>
         </td>
       `;
       tbody.appendChild(row);
     });
   }
 
-  // Delete Code from local registry
+  // حذف كود من السجل
   function deleteCode(code) {
-    layui.layer.confirm("Are you sure you want to delete code " + code + "?", {
+    layui.layer.confirm("هل أنت متأكد من رغبتك في حذف الكود " + code + "؟", {
       skin: 'layui-layer-admin',
-      title: 'Confirm Delete'
+      title: 'تأكيد الحذف',
+      btn: ['نعم', 'إلغاء']
     }, function(index) {
       delete window.registryCodes[code];
       updateRegistryTable();
       layui.layer.close(index);
-      layui.layer.msg("Code removed from registry.");
+      layui.layer.msg("تم حذف الكود بنجاح.");
     });
   }
 
-  // Trigger file selection for Import
   function triggerImport() {
     document.getElementById('importFile').click();
   }
 
-  // Import JSON File
+  // استيراد
   function importJSON(input) {
     let file = input.files[0];
     if (!file) return;
@@ -731,24 +786,23 @@
         if (imported && typeof imported === 'object') {
           window.registryCodes = Object.assign({}, window.registryCodes, imported);
           updateRegistryTable();
-          layui.layer.msg("Database imported successfully!", { icon: 1 });
+          layui.layer.msg("تم استيراد قاعدة البيانات بنجاح!", { icon: 1 });
         } else {
-          layui.layer.msg("Invalid file structure. Must be a JSON object mapping codes to product details.", { icon: 2 });
+          layui.layer.msg("بنية الملف غير صحيحة. يجب أن يكون ملف JSON يحتوي على خريطة للأكواد.", { icon: 2 });
         }
       } catch(err) {
-        layui.layer.msg("Error parsing JSON file: " + err.message, { icon: 2 });
+        layui.layer.msg("حدث خطأ أثناء قراءة الملف: " + err.message, { icon: 2 });
       }
     };
     reader.readAsText(file);
-    // Reset file input value
     input.value = "";
   }
 
-  // Export Local registry database as codes.json file
+  // تصدير
   function exportJSON() {
     let keys = Object.keys(window.registryCodes);
     if (keys.length === 0) {
-      layui.layer.msg("No codes in registry to export!", { icon: 2 });
+      layui.layer.msg("لا توجد أكواد لتصديرها!", { icon: 2 });
       return;
     }
 
@@ -759,7 +813,7 @@
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
-    layui.layer.msg("codes.json exported successfully!", { icon: 1 });
+    layui.layer.msg("تم تحميل وتصدير ملف codes.json بنجاح!", { icon: 1 });
   }
 </script>
 

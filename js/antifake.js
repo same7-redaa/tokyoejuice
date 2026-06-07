@@ -1433,9 +1433,7 @@ layui.use(["table", "form", "upload", "layer"], function () {
       gotPointTxt = `<button class="btn-vaild-points2 f-full-width-btn" onclick="goLogin();"> <span class="icon-reward"></span> <span class="underline">Sign In</span> &nbsp;  Get Reward Points!</button>`;
 
       check_antifake_code_is_exist(currentData.code, function (data) {
-        if (data.count > 0) {
-          gotPointTxt = "";
-        }
+        gotPointTxt = ""; // Force hide "Sign In" button
         saveGetPoints("search", searchPoint);
         showValidCertificate(gotPointTxt);
       });
@@ -1474,7 +1472,7 @@ layui.use(["table", "form", "upload", "layer"], function () {
 
       if (isHaveSearchPoints && !isSearchPointsUsed&&searchPoint > 0) {
         //有查询积分，未应用
-        gotPointTxt = `<button class="btn-vaild-points2 f-full-width-btn" onclick="goLogin();"> <span class="icon-reward"></span> <span class="underline">Sign In</span>‌&nbsp; To Get ` + searchPoint + ` Pts</button>`;
+        gotPointTxt = ""; // Force hide "Sign In" button
         showValidCertificate(gotPointTxt);
       } else {
         //查询积分已应用或者无查询积分
