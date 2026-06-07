@@ -1,0 +1,9 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/anti-counterfeiting",
+      "destination": "/index.html"
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+  .points-redemption {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin-bottom: 30px;
+      border-radius: 5px;
+     
+  }
+  
+  #points-form {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+  }
+  
+  #points-form input {
+      min-width:  150px;
+      width: 150px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+  }
+  
+  #points-form button {
+      background: #000000;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      border-radius: 3px;
+  }
+  
+  #points-applied-section {
+      background: #e8f5e9;
+      padding: 15px;
+      border-radius: 4px;
+      border: 1px solid #c8e6c9;
+      margin-bottom: 15px;
+  }
+  
+  #points-applied-section p {
+      margin: 5px 0;
+  }
+  
+  #cancel-points {
+      background: #f44336;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      border-radius: 3px;
+      margin-top: 10px;
+  }
+  
+  .points-info {
+      font-size: 0.9em;
+      color: #666;
+      width: 100%;
+      margin-top: 5px;
+  }
+  
+  #points-message .success {
+      color: green;
+      margin-top: 10px;
+  }
+  
+  #points-message .error {
+      color: red;
+      margin-top: 10px;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.points-history {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.points-history th, .points-history td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.points-history th {
+    background-color: #f2f2f2;
+}
+
+.success {
+    color: green;
+    margin-top: 10px;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
