@@ -4,11 +4,10 @@
    Custom Age Verification Popup (Age Gate) Styles
    ========================================================================== */
 
-.elementor-8374 {
-    display: none; /* Hidden by default until JavaScript decides */
-}
 
-.elementor-8374.show-age-gate {
+
+/* Age gate main class */
+.elementor-8374 {
     display: flex !important;
     position: fixed !important;
     top: 0 !important;
@@ -79,7 +78,7 @@
     margin: 0 !important;
 }
 
-/* Button grids/rows */
+/* Button grids/rows (Desktop and Mobile) */
 .elementor-8374 .elementor-element-342f7b8, 
 .elementor-8374 .elementor-element-117c421 {
     display: flex !important;
@@ -136,13 +135,27 @@
     text-align: center !important;
 }
 
-@media (max-width: 640px) {
-    .elementor-8374 .elementor-element-a3f46ec h2 {
-        font-size: 26px !important;
+/* Media Query Specific Hiding Utilities (Higher Specificity to overcome !important display rules) */
+@media (min-width: 1025px) {
+    .elementor-8374 .elementor-hidden-desktop,
+    .elementor-8374 .elementor-hidden-laptop {
+        display: none !important;
     }
-    .elementor-8374 .elementor-element-302e7b0 h5 {
-        font-size: 15px !important;
+}
+
+@media (max-width: 1024px) and (min-width: 768px) {
+    .elementor-8374 .elementor-hidden-tablet,
+    .elementor-8374 .elementor-hidden-laptop {
+        display: none !important;
     }
+}
+
+@media (max-width: 767px) {
+    .elementor-8374 .elementor-hidden-mobile,
+    .elementor-8374 .elementor-hidden-tablet {
+        display: none !important;
+    }
+    
     .elementor-8374 .elementor-element-342f7b8, 
     .elementor-8374 .elementor-element-117c421 {
         flex-direction: column !important;
@@ -158,25 +171,7 @@
     }
 }
 
-
-/* Elementor Responsive Hidden Utilities */
-@media (min-width: 1025px) {
-    .elementor-hidden-desktop {
-        display: none !important;
-    }
-}
-@media (max-width: 1024px) and (min-width: 768px) {
-    .elementor-hidden-tablet {
-        display: none !important;
-    }
-}
-@media (max-width: 1024px) {
-    .elementor-hidden-laptop {
-        display: none !important;
-    }
-}
-@media (max-width: 767px) {
-    .elementor-hidden-mobile {
-        display: none !important;
-    }
+body.age-gate-active {
+    overflow: hidden !important;
+    height: 100vh !important;
 }
