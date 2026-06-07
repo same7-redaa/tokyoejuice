@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم | توليد رموز التحقق QR</title>
+  <title>لوحة التحكم | توليد وحفظ رموز QR</title>
   <!-- خط Google Fonts: Poppins و Tajawal للمظهر العربي المميز -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
   <!-- Layui CSS (مكتبة الواجهات) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layui/2.8.17/css/layui.min.css">
+  <!-- مكتبة Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   
   <style>
     :root {
@@ -231,11 +233,6 @@
       font-size: 0.85rem;
     }
 
-    .preset-selector {
-      margin-top: 8px;
-      cursor: pointer;
-    }
-
     /* معاينة الكود */
     .preview-section {
       display: flex;
@@ -358,34 +355,23 @@
 
 <div class="container">
   <header>
-    <h1>لوحة تحكم <span class="brand">TOKYOEJUICE</span> لمطابقة الفحص</h1>
-    <p>أداة توليد رموز QR الذكية والتحكم في تفاصيل المنتجات دون الحاجة لقواعد بيانات</p>
+    <h1>لوحة تحكم <span class="brand">TOKYOEJUICE</span> السحابية</h1>
+    <p>أداة توليد رموز QR الذكية وحفظها تلقائياً بقاعدة بيانات Supabase لتعمل دائماً</p>
   </header>
 
   <div class="dashboard-grid">
     <!-- إعدادات المنتج -->
     <div class="card">
       <div class="card-title">
-        <span>إعدادات المنتج والباركود</span>
-        <button class="btn btn-secondary btn-small" onclick="autoFillMockData()">تحميل عينة نكهة جاهزة</button>
+        <span>بيانات المنتج والباركود</span>
+        <button class="btn btn-secondary btn-small" onclick="autoFillMockData()">تحميل بيانات تجريبية</button>
       </div>
 
       <div class="info-box">
-        💡 <strong>تنبيه للمطور:</strong> بما أن الاستضافة ثابتة (Static Vercel)، عند مسح الكود بالكاميرا، ستقوم الصفحة تلقائياً بالتعرف على نكهة المنتج والبيانات من خلال الرابط وعرضها. لا تتردد في استخدام ميزة <strong>توليد كود QR فوري</strong> لإنشاء الكود فوراً.
+        ☁️ <strong>قاعدة البيانات السحابية (Supabase):</strong> يتم حفظ الأكواد سحابياً وتلقائياً فور توليدها، مما يسمح للعملاء بمسح الكيو ار أو كتابة الباركود يدوياً في أي وقت ومن أي جهاز.
       </div>
       
       <form id="qrForm" onsubmit="return false;">
-        
-        <!-- إعداد النطاق / الدومين لحل مشكلة الفحص بالهاتف -->
-        <div class="form-group">
-          <label for="domainSelect">نطاق الرابط (الدومين المستهدف)</label>
-          <select id="domainSelect" onchange="toggleCustomDomain(this.value)">
-            <option value="auto">تلقائي (حسب الرابط الحالي للجهاز)</option>
-            <option value="production">رابط Vercel الإنتاجي (https://same7-redaa-tokyoejuice.vercel.app)</option>
-            <option value="custom">رابط مخصص (Custom Domain)...</option>
-          </select>
-          <input type="text" id="customDomainInput" placeholder="أدخل رابط موقعك هنا (مثال: https://mywebsite.com)" style="display: none; margin-top: 10px; direction: ltr; text-align: left;">
-        </div>
 
         <!-- الباركود -->
         <div class="form-group">
@@ -411,17 +397,11 @@
         <div class="form-group">
           <label for="productName">اسم المنتج والنكهة (Product Flavor)</label>
           <input type="text" id="productName" placeholder="مثال: Supercool30ml-dragon fruit-box-NEW" required>
-          <select class="preset-selector" onchange="applyFlavorPreset(this.value)">
-            <option value="">-- أو اختر من القوالب السريعة المتاحة --</option>
-            <option value="dragon">سوبر كول 30 مل - دراجون فروت (Dragon Fruit)</option>
-            <option value="mango">سوبر كول 30 مل - مانجو حلو (Sweet Mango)</option>
-            <option value="grape">سوبر كول 30 مل - عنب مثلج (Iced Grape)</option>
-          </select>
         </div>
 
         <!-- رابط الصورة -->
         <div class="form-group">
-          <label for="image">رابط صورة المنتج (المسار الكامل أو النسبي)</label>
+          <label for="image">رابط صورة المنتج (كامل أو نسبي)</label>
           <input type="text" id="image" placeholder="مثال: /files/images/products/... أو رابط إنترنت كامل لرفع الصورة" required style="direction: ltr; text-align: left;">
         </div>
 
@@ -447,20 +427,19 @@
           </div>
         </div>
 
-        <div class="form-group" style="margin-top: 30px; display: flex; gap: 15px;">
-          <button class="btn" style="flex: 1;" onclick="generateQR()">توليد كود QR فوري</button>
-          <button class="btn btn-secondary" style="flex: 1;" onclick="registerCode()">إضافة لملف codes.json</button>
+        <div class="form-group" style="margin-top: 30px;">
+          <button class="btn" style="width: 100%;" onclick="generateAndSave()">توليد كود QR وحفظه بقاعدة البيانات</button>
         </div>
       </form>
     </div>
 
     <!-- المعاينة المباشرة للكيو ار -->
     <div class="card" style="display: flex; flex-direction: column;">
-      <div class="card-title">معاينة رمز الـ QR المولد</div>
+      <div class="card-title">معاينة رمز الـ QR النشط</div>
       
       <div class="preview-section">
         <div class="qr-container" id="qrcode">
-          <div class="qr-placeholder">قم بتعبئة حقول البيانات ثم اضغط على زر "توليد كود QR فوري" لعرض الباركود هنا</div>
+          <div class="qr-placeholder">قم بتعبئة حقول البيانات ثم اضغط على زر "توليد كود QR وحفظه" لعرض الكود السحابي النشط هنا</div>
         </div>
         
         <div id="action_buttons" style="display: none; margin-bottom: 20px;">
@@ -469,28 +448,18 @@
 
         <div class="links-output">
           <h4>رابط التحقق الخاص بهذا الكود:</h4>
-          <textarea id="outputUrl" readonly placeholder="اضغط على زر توليد كود QR لعرض رابط الفحص هنا..."></textarea>
+          <textarea id="outputUrl" readonly placeholder="اضغط على زر التوليد لعرض رابط الفحص هنا..."></textarea>
           <button class="btn btn-secondary btn-small" style="width: 100%;" onclick="copyLink()">نسخ الرابط</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- سجل الأكواد -->
+  <!-- سجل الأكواد النشطة سحابياً -->
   <div class="card registry-section">
     <div class="card-title">
-      <span>سجل الأكواد الخاصة بك (ملف قاعدة البيانات codes.json)</span>
-      <span style="font-size: 0.9rem; color: var(--text-muted);" id="dbCount">إجمالي الأكواد: 0</span>
-    </div>
-
-    <div class="info-box" style="background-color: rgba(255,255,255,0.03); border-color: var(--border-color);">
-      للسماح للمستخدمين بكتابة الرموز يدوياً بدلاً من مسح الكيو ار، اضغط على <strong>تحميل وتصدير codes.json</strong> بعد الانتهاء، وانسخ الملف وضعه في مجلد <code>js/codes.json</code> بموقعك، ثم ارفع التحديث إلى GitHub.
-    </div>
-
-    <div class="db-ops">
-      <button class="btn btn-small btn-secondary" onclick="triggerImport()">استيراد ملف codes.json الحالي</button>
-      <input type="file" id="importFile" accept=".json" onchange="importJSON(this)">
-      <button class="btn btn-small" onclick="exportJSON()">تحميل وتصدير codes.json</button>
+      <span>الأكواد المخزنة سحابياً في Supabase</span>
+      <span style="font-size: 0.9rem; color: var(--text-muted);" id="dbCount">جاري تحميل البيانات...</span>
     </div>
 
     <div class="table-responsive">
@@ -507,7 +476,7 @@
         </thead>
         <tbody id="registryTable">
           <tr>
-            <td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد أكواد حالية في السجل. أضف أكواداً جديدة أو قم باستيراد ملف JSON.</td>
+            <td colspan="6" style="text-align: center; color: var(--text-muted);">جاري تحميل الأكواد من Supabase...</td>
           </tr>
         </tbody>
       </table>
@@ -520,40 +489,55 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
+  // تهيئة اتصال Supabase بقاعدة بيانات المستخدم
+  var supabaseUrl = 'https://bzgyqylrffbgascbbxqn.supabase.co';
+  var supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6Z3lxeWxyZmZiZ2FzY2JieHFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4NDU3NTQsImV4cCI6MjA5NjQyMTc1NH0.SpAMb9wyKKFQkRJ7r59tOXbFOwAT1Qe88xqWSKIyQ3w';
+  var supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
   var qrGenerator = null;
   window.registryCodes = {};
-
-  // بيانات افتراضية مسبقة
-  var presets = {
-    dragon: {
-      name: "Supercool30ml-dragon fruit-box-NEW",
-      img: "/files/images/products/20251023_1761204852817.jpg"
-    },
-    mango: {
-      name: "Supercool30ml-mango-box-NEW",
-      img: "/files/images/products/20251023_1761204839576.jpg"
-    },
-    grape: {
-      name: "Supercool30ml-grape-box-NEW",
-      img: "https://wp.asy315.vip/one/v1/files/images/products/20251023_1761204852817.jpg"
-    }
-  };
 
   // تعيين تاريخ اليوم تلقائياً
   document.getElementById('date').value = new Date().toISOString().split('T')[0];
 
-  // تحميل ملف codes.json الحالي من السيرفر تلقائياً إن وجد
-  fetch('js/codes.json')
-    .then(res => res.json())
-    .then(data => {
-      if (data && typeof data === 'object') {
-        window.registryCodes = data;
-        updateRegistryTable();
-      }
-    })
-    .catch(err => {
-      console.log("No deployed codes.json found yet.");
-    });
+  // تحميل الأكواد المخزنة سحابياً فور فتح الصفحة
+  loadSupabaseCodes();
+
+  function loadSupabaseCodes() {
+    supabaseClient
+      .from('codes')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .then(function(response) {
+        if (response.error) {
+          console.error("Supabase load error:", response.error);
+          document.getElementById('dbCount').innerText = "خطأ في الاتصال";
+          document.getElementById('registryTable').innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--accent-red);">لم نتمكن من جلب البيانات. الرجاء التأكد من إنشاء جدول codes في Supabase.</td></tr>`;
+        } else {
+          window.registryCodes = {};
+          var list = response.data || [];
+          list.forEach(item => {
+            window.registryCodes[item.code] = {
+              code: item.code,
+              companyName: item.company_name,
+              productName: item.product_name,
+              productImage2: item.product_image,
+              storeName: item.store_name,
+              storeCode: item.store_code,
+              countryOfSale: item.country,
+              productionDate: item.production_date,
+              checkCodeValue: item.check_code_value || 18,
+              integral: item.points || 50,
+              win: item.win
+            };
+          });
+          updateRegistryTable();
+        }
+      })
+      .catch(function(err) {
+        console.error("Load exception:", err);
+      });
+  }
 
   // توليد باركود عشوائي للشركة
   function fillRandomCode() {
@@ -564,35 +548,17 @@
     document.getElementById('code').value = code;
   }
 
-  // تفعيل القوالب
-  function applyFlavorPreset(key) {
-    if (presets[key]) {
-      document.getElementById('productName').value = presets[key].name;
-      document.getElementById('image').value = presets[key].img;
-    }
-  }
-
   // ملء الحقول تلقائياً للتجربة
   function autoFillMockData() {
     fillRandomCode();
     document.getElementById('brand').value = "TOKYOEJUICE";
-    document.getElementById('productName').value = presets.dragon.name;
-    document.getElementById('image').value = presets.dragon.img;
+    document.getElementById('productName').value = "Supercool30ml-dragon fruit-box-NEW";
+    document.getElementById('image').value = "/files/images/products/20251023_1761204852817.jpg";
     document.getElementById('storeName').value = "Premium Vape Egypt";
     document.getElementById('storeCode').value = "TK-EG-25";
     document.getElementById('country').value = "Egypt";
     document.getElementById('date').value = "2025-10-23";
     document.getElementById('pts').value = "50";
-  }
-
-  // التحكم بإظهار خانة الرابط المخصص
-  function toggleCustomDomain(val) {
-    let input = document.getElementById('customDomainInput');
-    if (val === 'custom') {
-      input.style.display = 'block';
-    } else {
-      input.style.display = 'none';
-    }
   }
 
   // جلب البيانات من الاستمارة
@@ -632,60 +598,75 @@
     };
   }
 
-  // بناء رابط الفحص بناءً على إعداد الدومين
+  // بناء رابط الفحص تلقائياً بناءً على الدومين الحالي
   function buildUrl(data) {
-    let domainSelect = document.getElementById('domainSelect').value;
     let origin = window.location.origin;
-
-    if (domainSelect === 'production') {
-      origin = "https://same7-redaa-tokyoejuice.vercel.app";
-    } else if (domainSelect === 'custom') {
-      let customVal = document.getElementById('customDomainInput').value.trim();
-      if (customVal) {
-        origin = customVal.replace(/\/$/, ""); // إزالة الشرطة المائلة الأخيرة
-      }
-    }
-
     let isProduction = origin.indexOf("vercel.app") !== -1 || origin.indexOf("tokyoejuice.com") !== -1;
     let basePath = isProduction ? '/anti-counterfeiting' : '/index.html';
     
-    let target = origin + basePath + "?c=" + data.code;
-    
-    target += "&name=" + encodeURIComponent(data.productName);
-    target += "&brand=" + encodeURIComponent(data.companyName);
-    target += "&img=" + encodeURIComponent(data.productImage2);
-    if (data.storeName) target += "&storeName=" + encodeURIComponent(data.storeName);
-    if (data.storeCode) target += "&storeCode=" + encodeURIComponent(data.storeCode);
-    target += "&country=" + encodeURIComponent(data.countryOfSale);
-    target += "&date=" + encodeURIComponent(data.productionDate);
-    target += "&pts=" + data.integral;
-
-    return target;
+    // بناء الرابط المباشر
+    return origin + basePath + "?c=" + data.code;
   }
 
-  // توليد الكيو ار
-  function generateQR() {
+  // توليد الكيو ار وحفظه في Supabase
+  function generateAndSave() {
     let data = getFormData();
     if (!data) return;
 
-    let targetUrl = buildUrl(data);
-    document.getElementById('outputUrl').value = targetUrl;
+    let loader = layui.layer.load(2, { shade: [0.3, '#000'] });
 
-    // مسح الحاوية وإنشاء الكيو ار
-    let container = document.getElementById('qrcode');
-    container.innerHTML = "";
-    
-    qrGenerator = new QRCode(container, {
-      text: targetUrl,
-      width: 200,
-      height: 200,
-      colorDark: "#000000",
-      colorLight: "#ffffff",
-      correctLevel: QRCode.CorrectLevel.H
-    });
+    // إرسال البيانات لقاعدة بيانات Supabase
+    supabaseClient
+      .from('codes')
+      .upsert({
+        code: data.code,
+        company_name: data.companyName,
+        product_name: data.productName,
+        product_image: data.productImage2,
+        store_name: data.storeName,
+        store_code: data.storeCode,
+        country: data.countryOfSale,
+        production_date: data.productionDate,
+        points: data.integral,
+        check_code_value: data.checkCodeValue,
+        win: data.win
+      })
+      .then(function(response) {
+        layui.layer.close(loader);
+        
+        if (response.error) {
+          console.error("Save error:", response.error);
+          layui.layer.msg("خطأ أثناء الحفظ في قاعدة البيانات: " + response.error.message, { icon: 2 });
+        } else {
+          layui.layer.msg("تم حفظ الباركود بنجاح في قاعدة البيانات سحابياً!", { icon: 1 });
+          
+          // توليد وعرض الكود على الشاشة
+          let targetUrl = buildUrl(data);
+          document.getElementById('outputUrl').value = targetUrl;
 
-    document.getElementById('action_buttons').style.display = "block";
-    layui.layer.msg("تم توليد الكيو ار الفوري بنجاح!", { icon: 1 });
+          let container = document.getElementById('qrcode');
+          container.innerHTML = "";
+          
+          qrGenerator = new QRCode(container, {
+            text: targetUrl,
+            width: 200,
+            height: 200,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+          });
+
+          document.getElementById('action_buttons').style.display = "block";
+          
+          // إعادة تحميل الجدول لمشاهدة السجل الجديد
+          loadSupabaseCodes();
+        }
+      })
+      .catch(function(err) {
+        layui.layer.close(loader);
+        console.error("Save exception:", err);
+        layui.layer.msg("خطأ في الاتصال بقاعدة البيانات", { icon: 2 });
+      });
   }
 
   // نسخ الرابط
@@ -698,7 +679,7 @@
     urlField.select();
     urlField.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(urlField.value);
-    layui.layer.msg("تم نسخ الرابط الحافظة!", { icon: 1 });
+    layui.layer.msg("تم نسخ الرابط للحافظة!", { icon: 1 });
   }
 
   // تحميل صورة الكيو ار
@@ -715,17 +696,6 @@
     link.click();
   }
 
-  // إضافة الكود لقاعدة البيانات
-  function registerCode() {
-    let data = getFormData();
-    if (!data) return;
-
-    window.registryCodes[data.code] = data;
-    
-    updateRegistryTable();
-    layui.layer.msg("تمت إضافة الرمز " + data.code + " لقاعدة البيانات المؤقتة بنجاح!", { icon: 1 });
-  }
-
   // تحديث جدول السجلات
   function updateRegistryTable() {
     let tbody = document.getElementById('registryTable');
@@ -734,7 +704,7 @@
     document.getElementById('dbCount').innerText = "إجمالي الأكواد: " + keys.length;
 
     if (keys.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد أكواد حالية في السجل. أضف أكواداً جديدة أو قم باستيراد ملف JSON.</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted);">لا توجد أكواد حالية في السجل. أضف أكواداً جديدة وحفظها لتظهر هنا.</td></tr>`;
       return;
     }
 
@@ -749,71 +719,44 @@
         <td>${codeObj.countryOfSale}</td>
         <td>${codeObj.productionDate}</td>
         <td>
-          <span class="action-badge" onclick="deleteCode('${codeObj.code}')">حذف</span>
+          <span class="action-badge" onclick="deleteCode('${codeObj.code}')">حذف من السحاب</span>
         </td>
       `;
       tbody.appendChild(row);
     });
   }
 
-  // حذف كود من السجل
+  // حذف كود من قاعدة البيانات السحابية
   function deleteCode(code) {
-    layui.layer.confirm("هل أنت متأكد من رغبتك في حذف الكود " + code + "؟", {
+    layui.layer.confirm("هل أنت متأكد من رغبتك في حذف الكود " + code + " نهائياً من قاعدة بيانات Supabase؟", {
       skin: 'layui-layer-admin',
-      title: 'تأكيد الحذف',
-      btn: ['نعم', 'إلغاء']
+      title: 'تأكيد الحذف نهائياً',
+      btn: ['حذف الآن', 'إلغاء']
     }, function(index) {
-      delete window.registryCodes[code];
-      updateRegistryTable();
-      layui.layer.close(index);
-      layui.layer.msg("تم حذف الكود بنجاح.");
+      let loader = layui.layer.load(2, { shade: [0.3, '#000'] });
+      
+      supabaseClient
+        .from('codes')
+        .delete()
+        .eq('code', code)
+        .then(function(response) {
+          layui.layer.close(loader);
+          layui.layer.close(index);
+          
+          if (response.error) {
+            layui.layer.msg("خطأ أثناء الحذف: " + response.error.message, { icon: 2 });
+          } else {
+            layui.layer.msg("تم حذف الكود من قاعدة البيانات السحابية بنجاح.");
+            loadSupabaseCodes(); // إعادة التحميل
+          }
+        })
+        .catch(function(err) {
+          layui.layer.close(loader);
+          layui.layer.close(index);
+          console.error("Delete exception:", err);
+          layui.layer.msg("خطأ في الاتصال بقاعدة البيانات", { icon: 2 });
+        });
     });
-  }
-
-  function triggerImport() {
-    document.getElementById('importFile').click();
-  }
-
-  // استيراد
-  function importJSON(input) {
-    let file = input.files[0];
-    if (!file) return;
-
-    let reader = new FileReader();
-    reader.onload = function(e) {
-      try {
-        let imported = JSON.parse(e.target.result);
-        if (imported && typeof imported === 'object') {
-          window.registryCodes = Object.assign({}, window.registryCodes, imported);
-          updateRegistryTable();
-          layui.layer.msg("تم استيراد قاعدة البيانات بنجاح!", { icon: 1 });
-        } else {
-          layui.layer.msg("بنية الملف غير صحيحة. يجب أن يكون ملف JSON يحتوي على خريطة للأكواد.", { icon: 2 });
-        }
-      } catch(err) {
-        layui.layer.msg("حدث خطأ أثناء قراءة الملف: " + err.message, { icon: 2 });
-      }
-    };
-    reader.readAsText(file);
-    input.value = "";
-  }
-
-  // تصدير
-  function exportJSON() {
-    let keys = Object.keys(window.registryCodes);
-    if (keys.length === 0) {
-      layui.layer.msg("لا توجد أكواد لتصديرها!", { icon: 2 });
-      return;
-    }
-
-    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.registryCodes, null, 2));
-    let downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "codes.json");
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-    layui.layer.msg("تم تحميل وتصدير ملف codes.json بنجاح!", { icon: 1 });
   }
 </script>
 

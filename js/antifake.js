@@ -23,6 +23,15 @@ try {
     .catch(function() {});
 } catch(e) {}
 
+// Supabase Database Connection
+var supabaseUrl = 'https://bzgyqylrffbgascbbxqn.supabase.co';
+var supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ6Z3lxeWxyZmZiZ2FzY2JieHFuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA4NDU3NTQsImV4cCI6MjA5NjQyMTc1NH0.SpAMb9wyKKFQkRJ7r59tOXbFOwAT1Qe88xqWSKIyQ3w';
+window.supabaseClient = null;
+
+if (typeof supabase !== 'undefined') {
+  window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+}
+
 window.dynamicUrlCodes = window.dynamicUrlCodes || {};
 window.localCodesDatabase = {};
 
@@ -574,120 +583,225 @@ layui.use(["table", "form", "upload", "layer"], function () {
       customData = window.localCodesDatabase[code];
     }
 
+  function handleCodeInterception(code, customData) {
+    // Manage search counts to trigger warnings after 3 searches
+    var key = "check_count_" + code;
+    var checkCount = parseInt(localStorage.getItem(key) || "0", 10);
+    checkCount++;
+    localStorage.setItem(key, checkCount);
+
+    // Deep copy to prevent mutating the database template
+    var matchedData = JSON.parse(JSON.stringify(customData));
+    matchedData.queryTimes = checkCount;
+    matchedData.isDisable = (checkCount > 3) ? 1 : 0;
+
+    var now = Date.now();
+    var currentIp = visitorIp || "196.130.143.159";
+    var currentCity = visitorCity || "Maadi";
+    var currentCountry = visitorCountry || "Egypt";
+    var currentAddr = currentCountry + "-" + currentCity;
+    var records = [];
+
+    if (checkCount === 1) {
+      records.push({
+        address: currentAddr,
+        city: currentCountry + " " + currentCity,
+        codeString: code,
+        createTime: now,
+        date: now,
+        deviceInfo: null,
+        id: 1000000 + Math.floor(Math.random() * 900000),
+        ip: currentIp,
+        queryTimes: 1,
+        remark: null,
+        updateTime: now
+      });
+      matchedData.firstTime = now;
+    } else if (checkCount === 2) {
+      var firstTime = now - 5 * 60 * 1000;
+      records.push({
+        address: currentAddr,
+        city: currentCountry + " " + currentCity,
+        codeString: code,
+        createTime: firstTime,
+        date: firstTime,
+        deviceInfo: null,
+        id: 1000000 + Math.floor(Math.random() * 900000),
+        ip: currentIp,
+        queryTimes: 2,
+        remark: null,
+        updateTime: firstTime
+      });
+      records.push({
+        address: currentAddr,
+        city: currentCountry + " " + currentCity,
+        codeString: code,
+        createTime: now,
+        date: now,
+        deviceInfo: null,
+        id: 1000000 + Math.floor(Math.random() * 900000),
+        ip: currentIp,
+        queryTimes: 2,
+        remark: null,
+        updateTime: now
+      });
+      matchedData.firstTime = firstTime;
+    } else {
+      var t1 = now - 15 * 60 * 1000;
+      var t2 = now - 5 * 60 * 1000;
+      records.push({
+        address: currentAddr,
+        city: currentCountry + " " + currentCity,
+        codeString: code,
+        createTime: t1,
+        date: t1,
+        deviceInfo: null,
+        id: 1000000 + Math.floor(Math.random() * 900000),
+        ip: currentIp,
+        queryTimes: 3,
+        remark: null,
+        updateTime: t1
+      });
+      records.push({
+        address: currentAddr,
+        city: currentCountry + " " + currentCity,
+        codeString: code,
+        createTime: t2,
+        date: t2,
+        deviceInfo: null,
+        id: 1000000 + Math.floor(Math.random() * 900000),
+        ip: currentIp,
+        queryTimes: 3,
+        remark: null,
+        updateTime: t2
+      });
+      records.push({
+        address: currentAddr,
+        city: currentCountry + " " + currentCity,
+        codeString: code,
+        createTime: now,
+        date: now,
+        deviceInfo: null,
+        id: 1000000 + Math.floor(Math.random() * 900000),
+        ip: currentIp,
+        queryTimes: 3,
+        remark: null,
+        updateTime: now
+      });
+      matchedData.firstTime = t1;
+    }
+
+    matchedData.queryRecord = records;
+
+    setTimeout(function () {
+      setLoadingOk();
+      setDataFrontendV2(matchedData);
+    }, 500);
+  }
+
+  function searchCode() {
+    $("#popContent").addClass("layui-hide");
+    $("#popContent_more").addClass("layui-hide");
+    $("#popContent_ok").addClass("layui-hide");
+    if (isLoading) {
+      return;
+    }
+    setLoading();
+    let code = ($("#txt_code").val() || "").trim();
+    if (!hasGetLocation) {
+      getLocation();
+      setLoadingOk();
+      return;
+    }
+
+    // 1. Check if code has intercepted static/dynamic details
+    var customData = null;
+    if (window.dynamicUrlCodes && window.dynamicUrlCodes[code]) {
+      customData = window.dynamicUrlCodes[code];
+    }
+    if (!customData) {
+      try {
+        var stored = sessionStorage.getItem("custom_code_" + code);
+        if (stored) {
+          customData = JSON.parse(stored);
+        }
+      } catch(e) {}
+    }
+
     if (customData) {
-      // Manage search counts to trigger warnings after 3 searches
-      var key = "check_count_" + code;
-      var checkCount = parseInt(localStorage.getItem(key) || "0", 10);
-      checkCount++;
-      localStorage.setItem(key, checkCount);
+      handleCodeInterception(code, customData);
+      return;
+    }
 
-      // Deep copy to prevent mutating the database template
-      var matchedData = JSON.parse(JSON.stringify(customData));
-      matchedData.queryTimes = checkCount;
-      matchedData.isDisable = (checkCount > 3) ? 1 : 0;
+    // 2. Check Supabase Database
+    if (window.supabaseClient) {
+      window.supabaseClient
+        .from('codes')
+        .select('*')
+        .eq('code', code)
+        .then(function(response) {
+          var dbData = response.data;
+          if (dbData && dbData.length > 0) {
+            var dbRecord = dbData[0];
+            var customData = {
+              code: dbRecord.code,
+              id: dbRecord.code,
+              companyName: dbRecord.company_name || "TOKYOEJUICE",
+              productName: dbRecord.product_name || "",
+              productImage2: dbRecord.product_image || "",
+              storeName: dbRecord.store_name || null,
+              storeCode: dbRecord.store_code || null,
+              countryOfSale: dbRecord.country || "Egypt",
+              productionDate: dbRecord.production_date || "",
+              checkCodeValue: dbRecord.check_code_value || 18,
+              integral: dbRecord.points || 50,
+              win: dbRecord.win || null
+            };
+            handleCodeInterception(code, customData);
+          } else {
+            fallbackToStaticOrWp(code);
+          }
+        })
+        .catch(function(err) {
+          console.error("Supabase query error:", err);
+          fallbackToStaticOrWp(code);
+        });
+      return;
+    }
 
-      var now = Date.now();
-      var currentIp = visitorIp || "196.130.143.159";
-      var currentCity = visitorCity || "Maadi";
-      var currentCountry = visitorCountry || "Egypt";
-      var currentAddr = currentCountry + "-" + currentCity;
-      var records = [];
+    fallbackToStaticOrWp(code);
+  }
 
-      if (checkCount === 1) {
-        records.push({
-          address: currentAddr,
-          city: currentCountry + " " + currentCity,
-          codeString: code,
-          createTime: now,
-          date: now,
-          deviceInfo: null,
-          id: 1000000 + Math.floor(Math.random() * 900000),
-          ip: currentIp,
-          queryTimes: 1,
-          remark: null,
-          updateTime: now
-        });
-        matchedData.firstTime = now;
-      } else if (checkCount === 2) {
-        var firstTime = now - 5 * 60 * 1000;
-        records.push({
-          address: currentAddr,
-          city: currentCountry + " " + currentCity,
-          codeString: code,
-          createTime: firstTime,
-          date: firstTime,
-          deviceInfo: null,
-          id: 1000000 + Math.floor(Math.random() * 900000),
-          ip: currentIp,
-          queryTimes: 2,
-          remark: null,
-          updateTime: firstTime
-        });
-        records.push({
-          address: currentAddr,
-          city: currentCountry + " " + currentCity,
-          codeString: code,
-          createTime: now,
-          date: now,
-          deviceInfo: null,
-          id: 1000000 + Math.floor(Math.random() * 900000),
-          ip: currentIp,
-          queryTimes: 2,
-          remark: null,
-          updateTime: now
-        });
-        matchedData.firstTime = firstTime;
-      } else {
-        var t1 = now - 15 * 60 * 1000;
-        var t2 = now - 5 * 60 * 1000;
-        records.push({
-          address: currentAddr,
-          city: currentCountry + " " + currentCity,
-          codeString: code,
-          createTime: t1,
-          date: t1,
-          deviceInfo: null,
-          id: 1000000 + Math.floor(Math.random() * 900000),
-          ip: currentIp,
-          queryTimes: 3,
-          remark: null,
-          updateTime: t1
-        });
-        records.push({
-          address: currentAddr,
-          city: currentCountry + " " + currentCity,
-          codeString: code,
-          createTime: t2,
-          date: t2,
-          deviceInfo: null,
-          id: 1000000 + Math.floor(Math.random() * 900000),
-          ip: currentIp,
-          queryTimes: 3,
-          remark: null,
-          updateTime: t2
-        });
-        records.push({
-          address: currentAddr,
-          city: currentCountry + " " + currentCity,
-          codeString: code,
-          createTime: now,
-          date: now,
-          deviceInfo: null,
-          id: 1000000 + Math.floor(Math.random() * 900000),
-          ip: currentIp,
-          queryTimes: 3,
-          remark: null,
-          updateTime: now
-        });
-        matchedData.firstTime = t1;
-      }
+  function fallbackToStaticOrWp(code) {
+    // 3. Check static codes.json
+    if (window.localCodesDatabase && window.localCodesDatabase[code]) {
+      handleCodeInterception(code, window.localCodesDatabase[code]);
+      return;
+    }
 
-      matchedData.queryRecord = records;
+    // 4. Default WooCommerce API Check
+    if (isValidUrl(code)) {
+      layer.msg(
+        "The current input content is a link, please enter anti-fraud code, please try again"
+      );
+      setLoadingOk();
+      return;
+    }
+    if (code.length < 10) {
+      layer.msg("invalid anti-fraud code, please try again");
+      setLoadingOk();
+      return;
+    }
 
-      setTimeout(function () {
-        setLoadingOk();
-        setDataFrontendV2(matchedData);
-      }, 500);
+    const openQueryConfig = getOpenQueryConfig();
+    const url = openQueryConfig.url;
+    const noncestr = randomString(8);
+    const index = openQueryConfig.index;
+    const timestamp = new Date().getTime();
+    const sign = createOpenQuerySign(code, noncestr, index, timestamp);
+    if (!sign) {
+      layer.msg("MD5 library failed to load, please try again later.");
+      setLoadingOk();
       return;
     }
 
