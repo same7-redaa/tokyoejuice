@@ -15,70 +15,168 @@
     left: 0 !important;
     width: 100% !important;
     height: 100% !important;
-    background-color: rgba(15, 23, 42, 0.98) !important; /* Elegant slate dark background */
-    background-image: radial-gradient(circle at center, rgba(15, 23, 42, 0.8) 0%, rgba(2, 6, 23, 1) 100%) !important;
+    background-color: #3d050b !important; /* Solid dark wine-red matching the screenshot */
     z-index: 2147483647 !important; /* Maximum z-index to stay on top of everything */
     justify-content: center !important;
     align-items: center !important;
     overflow-y: auto !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
 }
 
-/* Modal Container styles */
+/* Container */
 .elementor-8374 .elementor-element-eb5a782 {
-    background: #0f172a !important; /* Dark theme slate */
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    border-radius: 28px !important;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
-    max-width: 500px !important;
-    width: 90% !important;
-    padding: 40px !important;
+    background: transparent !important; /* No card background */
+    border: none !important; /* No border */
+    box-shadow: none !important; /* No shadow */
+    max-width: 800px !important;
+    width: 95% !important;
+    padding: 20px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
-    margin: 20px auto !important;
-}
-
-/* Ensure the warning banner looks premium and matches the color palette */
-.elementor-8374 .elementor-element-2296d3c {
-    background-color: rgba(255, 209, 191, 0.1) !important;
-    border-left: 4px solid #ffd1bf !important;
-    padding: 12px 15px !important;
-    border-radius: 8px !important;
-    margin-top: 25px !important;
-    width: 100% !important;
+    justify-content: center !important;
+    min-height: 100vh !important;
     box-sizing: border-box !important;
 }
 
-.elementor-8374 .elementor-element-2296d3c h4 {
-    font-size: 13px !important;
-    line-height: 1.4 !important;
-    color: #ffd1bf !important;
-    margin: 0 !important;
-    text-align: center !important;
-    font-weight: 500 !important;
+/* Svg Logo styling */
+.elementor-8374 .elementor-element-217f34d {
+    margin-bottom: 30px !important;
 }
 
-/* Customize Button spacings and center alignment */
+.elementor-8374 .elementor-icon svg {
+    width: 140px !important;
+    height: auto !important;
+}
+
+/* Heading: AGE VERIFICATION */
+.elementor-8374 .elementor-element-a3f46ec {
+    margin-bottom: 20px !important;
+}
+
+.elementor-8374 .elementor-element-a3f46ec h2 {
+    color: #ffffff !important;
+    font-size: 32px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    font-family: 'Poppins', sans-serif !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+
+/* Description text */
+.elementor-8374 .elementor-element-302e7b0 {
+    margin-bottom: 40px !important;
+}
+
+.elementor-8374 .elementor-element-302e7b0 h5 {
+    color: #ffffff !important;
+    font-size: 18px !important;
+    font-weight: 500 !important;
+    line-height: 1.6 !important;
+    text-align: center !important;
+    font-family: 'Poppins', sans-serif !important;
+    margin: 0 !important;
+}
+
+/* Button grids/rows */
 .elementor-8374 .elementor-element-342f7b8, 
 .elementor-8374 .elementor-element-117c421 {
     display: flex !important;
+    flex-direction: row !important;
     justify-content: center !important;
-    gap: 20px !important;
+    gap: 30px !important;
     width: 100% !important;
-    margin-top: 30px !important;
+    margin-bottom: 60px !important;
 }
 
+/* Pill buttons outline style */
 .elementor-8374 .elementor-button {
-    min-width: 140px !important;
+    background-color: transparent !important;
+    border: 2px solid #ffffff !important;
+    border-radius: 50px !important;
+    color: #ffffff !important;
+    font-family: 'Poppins', sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    padding: 16px 40px !important;
+    min-width: 180px !important;
     text-align: center !important;
     display: inline-block !important;
     transition: all 0.3s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
     cursor: pointer !important;
 }
 
 .elementor-8374 .elementor-button:hover {
+    background-color: #ffffff !important;
+    color: #3d050b !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Warning footer text */
+.elementor-8374 .elementor-element-2296d3c {
+    width: 100% !important;
+    max-width: 900px !important;
+    text-align: center !important;
+    margin-top: auto !important; /* Push to the bottom */
+    padding-bottom: 40px !important;
+}
+
+.elementor-8374 .elementor-element-2296d3c h4 {
+    color: #ffffff !important;
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.5px !important;
+    font-family: 'Poppins', sans-serif !important;
+    margin: 0 !important;
+    text-align: center !important;
+}
+
+@media (max-width: 640px) {
+    .elementor-8374 .elementor-element-a3f46ec h2 {
+        font-size: 26px !important;
+    }
+    .elementor-8374 .elementor-element-302e7b0 h5 {
+        font-size: 15px !important;
+    }
+    .elementor-8374 .elementor-element-342f7b8, 
+    .elementor-8374 .elementor-element-117c421 {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 15px !important;
+    }
+    .elementor-8374 .elementor-button {
+        width: 100% !important;
+        max-width: 280px !important;
+    }
+    .elementor-8374 .elementor-element-2296d3c h4 {
+        font-size: 15px !important;
+    }
+}
+
+
+/* Elementor Responsive Hidden Utilities */
+@media (min-width: 1025px) {
+    .elementor-hidden-desktop {
+        display: none !important;
+    }
+}
+@media (max-width: 1024px) and (min-width: 768px) {
+    .elementor-hidden-tablet {
+        display: none !important;
+    }
+}
+@media (max-width: 1024px) {
+    .elementor-hidden-laptop {
+        display: none !important;
+    }
+}
+@media (max-width: 767px) {
+    .elementor-hidden-mobile {
+        display: none !important;
+    }
 }
